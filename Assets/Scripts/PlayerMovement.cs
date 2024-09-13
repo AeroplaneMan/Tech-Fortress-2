@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -70,14 +68,15 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        // ground check
         grounded = Physics.CheckSphere(groundCheck.position, groundDistance, whatIsGround);
+
+        Debug.DrawRay(transform.position, Vector3.down * (playerHeight * 0.5f + groundDistance), Color.green);
+        Debug.Log("Grounded: " + grounded + " | On Slope: " + OnSlope());
 
         MyInput();
         SpeedControl();
         StateHandler();
 
-        // handle drag
         if (grounded)
             rb.drag = groundDrag;
         else
@@ -135,21 +134,30 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void MovePlayer() {
+    private void MovePlayer()
+    {
+        // calculate movement direction
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
-        if (OnSlope()) {
-            rb.useGravity = !OnSlope();
+
+        // on slope
+        if (OnSlope() && !exitingSlope)
+        {
             rb.AddForce(GetSlopeMoveDirection() * moveSpeed * 20f, ForceMode.Force);
 
             if (rb.velocity.y > 0)
                 rb.AddForce(Vector3.down * 80f, ForceMode.Force);
         }
 
+        // on ground
         else if (grounded)
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
 
+        // in air
         else if (!grounded)
-            rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);  
+            rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
+
+        // turn gravity off while on slope
+        rb.useGravity = !OnSlope();
     }
 
     private void SpeedControl()
@@ -177,7 +185,7 @@ public class PlayerMovement : MonoBehaviour
     {
         exitingSlope = true;
 
-        // reset y velocity
+        // reset y velocity 
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
@@ -191,7 +199,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool OnSlope()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight * 0.5f + 0.3f)) {
+        if (Physics.Raycast(groundCheck.position, Vector3.down, out slopeHit, playerHeight * 0.5f + 1.01f)) {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
             return angle < maxSlopeAngle && angle != 0;
         }
