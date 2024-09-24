@@ -20,10 +20,18 @@ public class PlayerMovement : MonoBehaviour
     public float crouchYScale;
     private float startYScale;
 
+    //[Header("Sliding")]
+    //public float maxSlideTime;
+    //public float slideForce;
+    //private float slideTimer;
+    //public float slideYScale;
+    //private bool sliding;
+
     [Header("Keybinds")]
     public KeyCode jumpKey = KeyCode.Space;
     public KeyCode sprintKey = KeyCode.LeftShift;
-    public KeyCode crouchKey = KeyCode.C;
+    public KeyCode crouchKey = KeyCode.LeftControl;
+    public KeyCode slideKey = KeyCode.Q;
 
     [Header("Ground Check")]
     public float playerHeight;
@@ -53,6 +61,7 @@ public class PlayerMovement : MonoBehaviour
         walking,
         sprinting,
         crouching,
+        sliding,
         air
     }
 
@@ -86,6 +95,9 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         MovePlayer();
+
+        //if (sliding)
+        //    SlidingMovement();
     }
 
     private void MyInput() {
@@ -99,12 +111,26 @@ public class PlayerMovement : MonoBehaviour
             Invoke(nameof(ResetJump), jumpCooldown);
         }
 
-        if (Input.GetKeyDown(crouchKey)) {
+        //if (Input.GetKeyDown(slideKey)) {
+        //    transform.localScale = new Vector3(transform.localScale.x, crouchYScale, transform.localScale.z);
+        //    rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);
+        //    readyToJump = false;
+        //    slideTimer = maxSlideTime;
+        //}
+
+        //if (Input.GetKeyDown(sprintKey) && Input.GetKeyDown(slideKey))
+        //{
+        //    readyToJump = true;
+        //    transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+        //}
+
+        if (Input.GetKeyDown(crouchKey))
+        {
             transform.localScale = new Vector3(transform.localScale.x, crouchYScale, transform.localScale.z);
             rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);
         }
 
-        if(Input.GetKeyUp(crouchKey)) {
+        if (Input.GetKeyUp(crouchKey)) {
             transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
         }
     }
@@ -115,6 +141,12 @@ public class PlayerMovement : MonoBehaviour
             state = MovementState.crouching;
             moveSpeed = crouchSpeed;
         }
+
+        //else if (Input.GetKey(slideKey))
+        //{
+        //    state = MovementState.sliding;
+        //    moveSpeed = slideForce;
+        //}
 
         else if (grounded && Input.GetKey(sprintKey))
         {
@@ -134,6 +166,28 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    //private void SlidingMovement()
+    //{
+    //    Vector3 inputDirection = (orientation.forward * verticalInput + orientation.right * horizontalInput).normalized;
+
+    //    if (inputDirection.magnitude > 0)
+    //    {
+    //        rb.AddForce(inputDirection * slideForce, ForceMode.Force);
+    //    }
+
+    //    slideTimer -= Time.deltaTime;
+
+    //    if (slideTimer <= 0)
+    //        StopSlide();
+    //}
+
+    //private void StopSlide()
+    //{
+    //    sliding = false;
+
+    //    transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+    //}
+
     private void MovePlayer()
     {
         // calculate movement direction
@@ -145,7 +199,7 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForce(GetSlopeMoveDirection() * moveSpeed * 20f, ForceMode.Force);
 
             if (rb.velocity.y > 0)
-                rb.AddForce(Vector3.down * 80f, ForceMode.Force);
+            rb.AddForce(Vector3.down * 80f, ForceMode.Force);
         }
 
         // on ground
@@ -199,7 +253,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool OnSlope()
     {
-        if (Physics.Raycast(groundCheck.position, Vector3.down, out slopeHit, playerHeight * 0.5f + 1.01f)) {
+        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight * 0.5f + groundDistance)) {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
             return angle < maxSlopeAngle && angle != 0;
         }
