@@ -113,7 +113,7 @@ public class PlayerMovement : MonoBehaviour
             Invoke(nameof(ResetJump), jumpCooldown);
         }
 
-        if (Input.GetKeyDown(crouchKey) && !Input.GetKey(sprintKey))
+        if (Input.GetKeyDown(crouchKey))
         {
             readyToJump = false;
             moveSpeed = crouchSpeed;
@@ -164,7 +164,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // check if desiredMoveSpeed has changed drastically
-        if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 4f && moveSpeed != 0)
+        if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 15f && moveSpeed != 0)
         {
             StopAllCoroutines();
             StartCoroutine(SmoothlyLerpMoveSpeed());
