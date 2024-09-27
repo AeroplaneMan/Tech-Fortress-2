@@ -9727,7 +9727,7 @@ GameObject:
   - component: {fileID: 198656289721292014}
   - component: {fileID: 199514137936353666}
   m_Layer: 0
-  m_Name: SmallExplosion
+  m_Name: SmallExplosion 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9743,7 +9743,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: -0.50997305, y: 2.57, z: -20.12803}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_LocalScale: {x: 2.42, y: 2.42, z: 2.42}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6829146933851329153}

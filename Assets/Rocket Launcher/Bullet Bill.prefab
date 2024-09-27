@@ -210,7 +210,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 8657509827825379395}
-  explosion: {fileID: 1828176872806910, guid: 64891a0eb28db934898420d80ca07cb3, type: 3}
+  explosion: {fileID: 1828176872806910, guid: 6e56f7e81df40624ba98b673f72457ff, type: 3}
   whatIsEnemies:
     serializedVersion: 2
     m_Bits: 512
