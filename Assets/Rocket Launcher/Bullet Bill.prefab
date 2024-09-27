@@ -210,15 +210,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 8657509827825379395}
-  explosion: {fileID: 0}
+  explosion: {fileID: 1828176872806910, guid: 64891a0eb28db934898420d80ca07cb3, type: 3}
   whatIsEnemies:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
   bounciness: 0.104
   useGravity: 1
   explosionDamage: 40
   explosionRange: 6
-  maxCollisions: 1
+  maxCollisions: 0
   maxLifetime: 4
   explodeOnTouch: 1
 --- !u!1 &8719971549015238834

@@ -45,15 +45,21 @@ public class CustomBullet : MonoBehaviour
         //{
         //    enemies[i].GetComponent<ShootingAi>().TakeDamage(explosionDamage);
         //}
+        Invoke("Delay", 0.05f);
     }
 
+    private void Delay()
+    {
+        Destroy(gameObject);
+    }
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.collider.CompareTag("Bullet")) return;
 
         collisions++;
 
-        if (collision.collider.CompareTag("Enemy") && explodeOnTouch) Explode();
+        if (collision.collider.CompareTag("Enemy") && explodeOnTouch) 
+            Explode(); Debug.Log("BOOM");
     }
     private void Setup()
     {
