@@ -14,6 +14,9 @@ public class ProjectileGun : MonoBehaviour
 
     int bulletsLeft, bulletsShot;
 
+    public Rigidbody rb;
+    public float recoilForce;
+
     bool shooting, readyToShoot, reloading;
 
     public Camera fpsCam;
@@ -77,7 +80,8 @@ public class ProjectileGun : MonoBehaviour
         currentBullet.GetComponent<Rigidbody>().AddForce(fpsCam.transform.up * upwardForce, ForceMode.Impulse);
 
         if (muzzleFlash != null)
-            Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
+            Instantiate(muzzleFlash, attackPoint.position, attackPoint.rotation);
+            muzzleFlash.transform.parent = attackPoint.transform;
 
         bulletsLeft--;
         bulletsShot++;
@@ -86,6 +90,8 @@ public class ProjectileGun : MonoBehaviour
         {
             Invoke("ResetShot", timeBetweenShooting);
             allowInvoke = false;
+
+            rb.AddForce(-directionWithSpread.normalized * recoilForce, ForceMode.Impulse);
         }
 
         if (bulletsShot < bulletsPerTap && bulletsLeft > 0)
