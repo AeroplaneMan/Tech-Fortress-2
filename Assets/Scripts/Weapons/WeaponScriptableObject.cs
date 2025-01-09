@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
-[CreateAssetMenu(fileName = "Weapon", menuName = "Weapons/Weapon")]
+[CreateAssetMenu(fileName = "Weapon", menuName = "Weapons/Weapon", order = 0)]
 public class WeaponScriptableObject : ScriptableObject
 {
     public GunType weaponType;
@@ -82,7 +82,7 @@ public class WeaponScriptableObject : ScriptableObject
         float remainingDistance = distance;
         while (remainingDistance > 0)
         {
-            instance.transform.position = Vector3.Lerp(startPoint, endPoint, Mathf.Clamp01(remainingDistance / distance));
+            instance.transform.position = Vector3.Lerp(startPoint, endPoint, Mathf.Clamp01(1 - remainingDistance / distance));
             remainingDistance -= trailConfig.simulationSpeed * Time.deltaTime;
             yield return null;
         }

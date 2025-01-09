@@ -77,8 +77,16 @@ public class ProjectileGun : MonoBehaviour
         RaycastHit hit;
 
         Vector3 targetPoint;
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out hit)) {
             targetPoint = hit.point;
+
+            EnemyAI enemyAI = hit.collider.GetComponent<EnemyAI>();
+            if (enemyAI != null)
+            {
+                Debug.Log("Hit an enemy!");
+                enemyAI.TakeDamage(10); // Apply 10 damage
+            }
+        }
         else
             targetPoint = ray.GetPoint(75);
 

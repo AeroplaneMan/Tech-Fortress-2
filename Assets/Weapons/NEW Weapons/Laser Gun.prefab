@@ -4844,7 +4844,7 @@ Transform:
   m_GameObject: {fileID: 1826009351728626398}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.141, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4860,7 +4860,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1826009351728626398}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac53a4786cafd7a4ea4a530ad44cdfbc, type: 3}
   m_Name: 
@@ -4875,13 +4875,20 @@ MonoBehaviour:
   magazineSize: 100
   bulletsPerTap: 1
   allowButtonHold: 1
-  rb: {fileID: 3360839999267933429, guid: 954de67b11021e948be37bcb0bdfa220, type: 3}
+  gunRecoilSettings:
+    recoilAmount: 0
+    recoilAimRatio: 0
+    dampingRatio: 0
+    angularFrequency: 0
+    recoilOffsetPos: {x: 0, y: 0, z: 0}
+    recoilOffsetRot: {x: 0, y: 0, z: 0}
   recoilForce: 1
-  fpsCam: {fileID: 9190782398644514391, guid: d8485f0edb933474c8a5072152138c0a, type: 3}
-  attackPoint: {fileID: 2400801956125464924}
   muzzleFlash: {fileID: 7951687550336806699}
   ammunitionDisplay: {fileID: 8920832756115414478}
   allowInvoke: 1
+  rb: {fileID: 3360839999267933429, guid: 954de67b11021e948be37bcb0bdfa220, type: 3}
+  fpsCam: {fileID: 9190782398644514391, guid: d8485f0edb933474c8a5072152138c0a, type: 3}
+  attackPoint: {fileID: 2400801956125464924}
 --- !u!114 &6596860649692086510
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4923,9 +4930,9 @@ Transform:
   m_GameObject: {fileID: 3222844774580678023}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: -0.46, z: -0.96}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2529788371207844367}
   m_Father: {fileID: 2400801956125464924}
