@@ -6,35 +6,48 @@ public class PlayerDamage : MonoBehaviour
 {
     public int health = 100;
     public PlayerMovement playerMove;
-    public PickUpSystem pickUpSystem;
-
+    public bool Dead;
+    Rigidbody playerRB;
+    Sliding sliding;
+    AudioSource audioSource;
+    [SerializeField] private GameOverUI gameOver;
+    [SerializeField] private Camera cam;
+    public float camFOVIn;
+    [SerializeField] private float camFOVOut;
+    [HideInInspector] public float countdown = 0f;
+    [SerializeField] private GameObject gameOverScreen;
+    [SerializeField] private PickUpSystem pickUp1;
+    [SerializeField] private PickUpSystem pickUp2;
     public void TakeDamage(int damage)
     {
         health -= damage;
         if (health <= 0)
         {
-            playerMove.enabled = false;
-            
-            Die();
+            pickUp1.enabled = false;
+            pickUp2.enabled = false;
+            gameOverScreen.SetActive(true);
+            StartCoroutine(PlayerDie());
         }
     }
 
-    private void Die()
+    public IEnumerator PlayerDie()
     {
-        Debug.Log("Player has died.");
-        playerMove.enabled = false;
-    }
+        Dead = true;
+        yield return null;
+        playerMove.Die();
+        sliding.Die();
+        //playerRB.AddRelativeTorque(Random.insideUnitSphere * 1000, ForceMode.Impulse);
+        //playerRB.AddExplosionForce(50, enemy.position, 10f, 1f, ForceMode.Impulse);
 
-    private void OnGUI()
-    {
-        if (health <= 0)
-        {
-            GUI.Label(new Rect(10, 10, 100, 20), "Health: 0, Game Over!");
-        }
-        else
-        {
-            GUI.Label(new Rect(10, 10, 100, 20), "Health: " + health);
+        float elapsed = 0;
+        countdown = camFOVIn + 1;
 
+        while (elapsed < camFOVIn)
+        {
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 135f, elapsed / camFOVIn);
+            elapsed += Time.deltaTime;
+            gameOver.Update();
+            yield return null;
         }
     }
 }

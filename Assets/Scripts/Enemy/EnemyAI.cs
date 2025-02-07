@@ -28,6 +28,7 @@ public class EnemyAI : MonoBehaviour
     public float attackSpeed;
     [HideInInspector] public bool playerInSightRange;
     [HideInInspector] public bool playerInAttackRange;
+    [SerializeField] private LevelCompleteCheck levelComplete;
 
     private void Awake()
     {
@@ -141,13 +142,18 @@ public class EnemyAI : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if (health <= 0) return; // Prevent extra damage calls after death
+
         health -= damage;
         hitEffect.Play();
-        StartCoroutine(TakeDamageCoroutine());
 
         if (health <= 0)
         {
-            Invoke(nameof(DestroyEnemy), 0.5f);
+            Die();
+        }
+        else if (!takeDamage) // Avoid restarting coroutine if already taking damage
+        {
+            StartCoroutine(TakeDamageCoroutine());
         }
     }
 
@@ -158,15 +164,14 @@ public class EnemyAI : MonoBehaviour
         takeDamage = false;
     }
 
-    private void DestroyEnemy()
+    private void Die()
     {
-        StartCoroutine(DestroyEnemyCoroutine());
-    }
+        //if (!takeDamage) return; // Ensures it only runs once
 
-    private IEnumerator DestroyEnemyCoroutine()
-    {
-        yield return new WaitForSeconds(1.8f);
-        Destroy(gameObject);
+        takeDamage = false;
+        Destroy(gameObject, 0.5f);
+        levelComplete.numEnemiesDestroyed++;
+        Debug.Log("Enemies Killed: " + levelComplete.numEnemiesDestroyed);
     }
 
     private void OnDrawGizmosSelected()

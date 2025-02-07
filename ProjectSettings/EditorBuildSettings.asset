@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 0aa3e890724a9394b8cfe864e5664a95
+  - enabled: 1
+    path: Assets/Scenes/SmarterEnemyScene.unity
+    guid: ccac3e610aa89e049884399176e64f38
   m_configObjects: {}

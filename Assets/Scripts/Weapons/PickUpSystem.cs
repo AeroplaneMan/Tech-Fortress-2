@@ -22,6 +22,8 @@ public class PickUpSystem : MonoBehaviour
 
     private void Start()
     {
+        slotFull = false;
+
         if (!equipped) { 
             gunScript.enabled = false;
             sway.enabled = false;

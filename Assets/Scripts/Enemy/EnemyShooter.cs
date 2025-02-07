@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
+//using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class EnemyShooter : MonoBehaviour
@@ -9,6 +9,8 @@ public class EnemyShooter : MonoBehaviour
     public Transform attackPoint;
     public Transform gunPoint;
     public LayerMask layerMask;
+    public int playerDamage;
+    private int numBullets;
 
     [Header("Gun")]
     public Vector3 spread = new Vector3(0.06f, 0.06f, 0.06f);
@@ -23,9 +25,25 @@ public class EnemyShooter : MonoBehaviour
     public void Shoot()
     {
         Vector3 direction = GetDirection();
+        RaycastHit hit;
 
-        if (Physics.Raycast(attackPoint.position, direction, out RaycastHit hit, float.MaxValue, layerMask))
+        Vector3 targetPoint;
+        if (Physics.Raycast(attackPoint.position, direction, out hit, float.MaxValue, layerMask))
         {
+            targetPoint = hit.point;
+
+            PlayerDamage player = hit.collider.GetComponent<PlayerDamage>();
+            if (player != null)
+            {
+                numBullets++;
+                if (numBullets >= 3)
+                {
+                    Debug.Log("Hit the player!");
+                    player.TakeDamage(playerDamage);
+                    numBullets = 0;
+                }  
+            }
+
             Debug.DrawLine(attackPoint.position, attackPoint.position + direction * 10f, Color.red, 1f);
 
             TrailRenderer trail = Instantiate(bulletTrail, gunPoint.position, Quaternion.identity);

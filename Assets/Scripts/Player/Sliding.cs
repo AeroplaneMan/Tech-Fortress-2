@@ -34,6 +34,13 @@ public class Sliding : MonoBehaviour
 
     private void Update()
     {
+        if (pm.state == PlayerMovement.MovementState.dead)
+        {
+            horizontalInput = 0;
+            verticalInput = 0;
+            return;
+        }
+
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
         if (Input.GetKeyDown(slideKey) && (horizontalInput != 0 || verticalInput != 0))
@@ -85,5 +92,10 @@ public class Sliding : MonoBehaviour
         pm.sliding = false;
 
         transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+    }
+
+    public void Die()
+    {
+        StopSlide();
     }
 }

@@ -7,6 +7,8 @@ TagManager:
   - Bullet
   - Enemy
   - WeaponCam
+  - LaserGun
+  - RocketLauncher
   layers:
   - Default
   - TransparentFX
@@ -20,7 +22,7 @@ TagManager:
   - WhatIsEnemy
   - WhatIsPlayer
   - WhatIsEnemyBullet
-  - 
+  - Obstacle
   - 
   - 
   - 
@@ -41,6 +43,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Logo
+    uniqueID: 2716763885
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

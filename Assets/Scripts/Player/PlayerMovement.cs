@@ -38,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Ground Check")]
     public float playerHeight;
     public LayerMask whatIsGround;
+    public LayerMask obstacleLayer;
     public bool grounded;
     public Transform groundCheck;
     public float groundDistance = 0.4f;
@@ -45,16 +46,16 @@ public class PlayerMovement : MonoBehaviour
     [Header("Slope Handling")]
     public float maxSlopeAngle;
     private RaycastHit slopeHit;
-    private bool exitingSlope;
+    public bool exitingSlope;
 
     public Transform orientation;
 
-    float horizontalInput;
+    public float horizontalInput;
     float verticalInput;
 
-    Vector3 moveDirection;
+    public Vector3 moveDirection;
 
-    Rigidbody rb;
+    public Rigidbody rb;
 
     public MovementState state;
 
@@ -64,7 +65,8 @@ public class PlayerMovement : MonoBehaviour
         sprinting,
         crouching,
         sliding,
-        air
+        air,
+        dead
     }
 
     public bool sliding;
@@ -81,9 +83,9 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        grounded = Physics.CheckSphere(groundCheck.position, groundDistance, whatIsGround);
+        grounded = Physics.CheckSphere(groundCheck.position, groundDistance, whatIsGround | obstacleLayer);
 
-        Debug.DrawRay(transform.position, Vector3.down * (playerHeight * 0.5f + groundDistance), Color.green);
+        // Debug.DrawRay(transform.position, Vector3.down * (playerHeight * 0.5f + groundDistance), Color.green);
         Debug.Log("Grounded: " + grounded + " | On Slope: " + OnSlope());
 
         MyInput();
@@ -103,6 +105,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void MyInput()
     {
+        if (state == MovementState.dead)
+        {
+            horizontalInput = 0;
+            verticalInput = 0;
+            return;
+        }
+
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
@@ -129,6 +138,8 @@ public class PlayerMovement : MonoBehaviour
     }
     private void StateHandler()
     {
+        if (state == MovementState.dead) return;
+
         if (sliding)
         {
             state = MovementState.sliding;
@@ -284,5 +295,19 @@ public class PlayerMovement : MonoBehaviour
     public Vector3 GetSlopeMoveDirection(Vector3 direction)
     {
         return Vector3.ProjectOnPlane(direction, slopeHit.normal).normalized;
+    }
+
+    public void Die()
+    {
+        state = MovementState.dead;
+        //rb.freezeRotation = false;
+        sliding = false;
+    }
+
+    public void Respawn()
+    {
+        state = MovementState.walking;
+        rb.rotation = Quaternion.identity;
+        //rb.freezeRotation = true;
     }
 }

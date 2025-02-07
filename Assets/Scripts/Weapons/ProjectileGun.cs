@@ -32,7 +32,8 @@ public class ProjectileGun : MonoBehaviour
     public Rigidbody rb;
     public Camera fpsCam;
     public Transform attackPoint;
-    
+
+    public int enemyDamage;
 
     private void Awake() { 
         bulletsLeft = magazineSize;
@@ -84,7 +85,7 @@ public class ProjectileGun : MonoBehaviour
             if (enemyAI != null)
             {
                 Debug.Log("Hit an enemy!");
-                enemyAI.TakeDamage(10); // Apply 10 damage
+                if (hit.collider.CompareTag("Enemy")) enemyAI.TakeDamage(enemyDamage); // Apply 10 damage
             }
         }
         else
