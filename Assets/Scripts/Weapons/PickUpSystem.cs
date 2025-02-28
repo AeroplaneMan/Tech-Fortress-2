@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+// PickUpSystem handles the logic for picking up, equipping, and dropping weapons.
 public class PickUpSystem : MonoBehaviour
 {
     public ProjectileGun gunScript;
@@ -20,11 +21,13 @@ public class PickUpSystem : MonoBehaviour
     public bool equipped;
     public static bool slotFull;
 
+    // Initializes weapon state based on whether it's equipped or not.
     private void Start()
     {
         slotFull = false;
 
-        if (!equipped) { 
+        if (!equipped)
+        {
             gunScript.enabled = false;
             sway.enabled = false;
             rb.isKinematic = false;
@@ -32,6 +35,7 @@ public class PickUpSystem : MonoBehaviour
             ammunitionDisplay.enabled = false;
             weaponCam.enabled = false;
         }
+
         if (equipped)
         {
             gunScript.enabled = true;
@@ -43,13 +47,21 @@ public class PickUpSystem : MonoBehaviour
             weaponCam.enabled = true;
         }
     }
-    private void Update() { 
-        Vector3 distanceToPlayer = player.position - transform.position;
-        if (!equipped && distanceToPlayer.magnitude <= pickUpRange && Input.GetKeyDown(KeyCode.E) && !slotFull) PickUp();
 
-        if (equipped && Input.GetKeyDown(KeyCode.F)) Drop();
+    // Checks for player input to pick up or drop the weapon.
+    private void Update()
+    {
+        Vector3 distanceToPlayer = player.position - transform.position;
+        if (!equipped && distanceToPlayer.magnitude <= pickUpRange && Input.GetKeyDown(KeyCode.E) && !slotFull)
+            PickUp();
+
+        if (equipped && Input.GetKeyDown(KeyCode.F))
+            Drop();
     }
-    private void PickUp() { 
+
+    // Picks up the weapon, attaching it to the player and enabling its functionality.
+    private void PickUp()
+    {
         equipped = true;
         slotFull = true;
 
@@ -65,7 +77,10 @@ public class PickUpSystem : MonoBehaviour
         ammunitionDisplay.enabled = true;
         weaponCam.enabled = true;
     }
-    private void Drop() {
+
+    // Drops the weapon, applying physics forces and disabling its functionality.
+    private void Drop()
+    {
         equipped = false;
         slotFull = false;
 
@@ -73,15 +88,15 @@ public class PickUpSystem : MonoBehaviour
 
         rb.isKinematic = false;
         coll.isTrigger = false;
-        
+
         rb.velocity = player.GetComponent<Rigidbody>().velocity;
 
         rb.AddForce(fpsCam.forward * dropForwardForce, ForceMode.Impulse);
         rb.AddForce(fpsCam.up * dropUpwardForce, ForceMode.Impulse);
 
         float random = Random.Range(-1f, 1f);
-        rb.AddTorque(new Vector3(random,random,random) * 10);
-        
+        rb.AddTorque(new Vector3(random, random, random) * 10);
+
         gunScript.enabled = false;
         sway.enabled = false;
         ammunitionDisplay.enabled = false;

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// This class handles all player movement, including walking, sprinting, jumping, crouching, sliding, and air control.
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
@@ -71,6 +72,7 @@ public class PlayerMovement : MonoBehaviour
 
     public bool sliding;
 
+    // Initializes the Rigidbody and sets the initial state.
     private void Start()
     {
         readyToJump = true;
@@ -80,29 +82,32 @@ public class PlayerMovement : MonoBehaviour
         startYScale = transform.localScale.y;
     }
 
-    // Update is called once per frame
+    // Checks inputs and updates player state every frame.
     private void Update()
     {
         grounded = Physics.CheckSphere(groundCheck.position, groundDistance, whatIsGround | obstacleLayer);
 
-        // Debug.DrawRay(transform.position, Vector3.down * (playerHeight * 0.5f + groundDistance), Color.green);
+        // Debugging the ground state and slope status
         Debug.Log("Grounded: " + grounded + " | On Slope: " + OnSlope());
 
         MyInput();
         SpeedControl();
         StateHandler();
 
+        // Applies ground drag when grounded.
         if (grounded)
             rb.drag = groundDrag;
         else
             rb.drag = 0;
     }
 
+    // Applies movement logic during the physics updates.
     private void FixedUpdate()
     {
         MovePlayer();
     }
 
+    // Handles player input for movement, jumping, and crouching.
     private void MyInput()
     {
         if (state == MovementState.dead)
@@ -136,6 +141,8 @@ public class PlayerMovement : MonoBehaviour
             transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
         }
     }
+
+    // Handles state changes based on movement inputs and conditions.
     private void StateHandler()
     {
         if (state == MovementState.dead) return;
@@ -146,35 +153,30 @@ public class PlayerMovement : MonoBehaviour
 
             if (OnSlope() && rb.velocity.y < 0.1f)
                 desiredMoveSpeed = slideSpeed;
-
             else
                 desiredMoveSpeed = sprintSpeed;
         }
-
         else if (Input.GetKey(crouchKey))
         {
             state = MovementState.crouching;
             desiredMoveSpeed = crouchSpeed;
         }
-
         else if (grounded && Input.GetKey(sprintKey))
         {
             state = MovementState.sprinting;
             desiredMoveSpeed = sprintSpeed;
         }
-
         else if (grounded)
         {
             state = MovementState.walking;
             desiredMoveSpeed = walkSpeed;
         }
-
         else
         {
             state = MovementState.air;
         }
 
-        // check if desiredMoveSpeed has changed drastically
+        // Smoothly adjusts the movement speed when there is a drastic change.
         if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 15f && moveSpeed != 0)
         {
             StopAllCoroutines();
@@ -186,13 +188,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         lastDesiredMoveSpeed = desiredMoveSpeed;
-
-
     }
 
+    // Smoothly adjusts the movement speed over time.
     private IEnumerator SmoothlyLerpMoveSpeed()
     {
-        // smoothly lerp movementSpeed to desired value
         float time = 0;
         float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed);
         float startValue = moveSpeed;
@@ -217,12 +217,12 @@ public class PlayerMovement : MonoBehaviour
         moveSpeed = desiredMoveSpeed;
     }
 
+    // Moves the player based on the input and state.
     private void MovePlayer()
     {
-        // calculate movement direction
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
-        // on slope
+        // Handle movement on slopes
         if (OnSlope() && !exitingSlope)
         {
             rb.AddForce(GetSlopeMoveDirection(moveDirection) * moveSpeed * 20f, ForceMode.Force);
@@ -230,19 +230,19 @@ public class PlayerMovement : MonoBehaviour
             if (rb.velocity.y > 0)
                 rb.AddForce(Vector3.down * 80f, ForceMode.Force);
         }
-
-        // on ground
+        // On ground movement
         else if (grounded)
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
 
-        // in air
+        // In air movement
         else if (!grounded)
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
 
-        // turn gravity off while on slope
+        // Turn off gravity on slopes
         rb.useGravity = !OnSlope();
     }
 
+    // Controls the player's velocity and ensures the movement speed is within limits.
     private void SpeedControl()
     {
         if (OnSlope() && !exitingSlope)
@@ -250,37 +250,36 @@ public class PlayerMovement : MonoBehaviour
             if (rb.velocity.magnitude > moveSpeed)
                 rb.velocity = rb.velocity.normalized * moveSpeed;
         }
-
         else
         {
             Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
-            // limit velocity if needed
             if (flatVel.magnitude > moveSpeed)
             {
                 Vector3 limitedVel = flatVel.normalized * moveSpeed;
                 rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
             }
         }
-
     }
 
+    // Makes the player jump.
     private void Jump()
     {
         exitingSlope = true;
 
-        // reset y velocity
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
     }
 
+    // Resets the jump state.
     private void ResetJump()
     {
         exitingSlope = false;
         readyToJump = true;
     }
 
+    // Checks if the player is on a slope.
     public bool OnSlope()
     {
         if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight * 0.5f + groundDistance))
@@ -292,22 +291,23 @@ public class PlayerMovement : MonoBehaviour
         return false;
     }
 
+    // Returns the direction to move on the slope.
     public Vector3 GetSlopeMoveDirection(Vector3 direction)
     {
         return Vector3.ProjectOnPlane(direction, slopeHit.normal).normalized;
     }
 
+    // Sets the player's state to dead.
     public void Die()
     {
         state = MovementState.dead;
-        //rb.freezeRotation = false;
         sliding = false;
     }
 
+    // Respawns the player to their default state.
     public void Respawn()
     {
         state = MovementState.walking;
         rb.rotation = Quaternion.identity;
-        //rb.freezeRotation = true;
     }
 }

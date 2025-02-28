@@ -2,25 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Handles weapon sway based on mouse movement, creating a smoother FPS aiming experience.
 public class WeaponSway : MonoBehaviour
 {
     [Header("Sway Settings")]
-    [SerializeField] private float smooth;
-    [SerializeField] private float swayMultiplier;
-    public Quaternion SwayRotation { get; private set; }
+    [SerializeField] private float smooth; // Determines how smooth the sway effect is
+    [SerializeField] private float swayMultiplier; // Controls the intensity of the sway
+    public Quaternion SwayRotation { get; private set; } // Stores the calculated sway rotation
+
     private void Update()
     {
-        // get mouse input
+        // Get raw mouse input values
         float mouseX = Input.GetAxisRaw("Mouse X") * swayMultiplier;
         float mouseY = Input.GetAxisRaw("Mouse Y") * swayMultiplier;
 
-        //calculate target rotation
+        // Calculate rotation based on mouse movement
         Quaternion rotationX = Quaternion.AngleAxis(-mouseY, Vector3.right);
         Quaternion rotationY = Quaternion.AngleAxis(mouseX, Vector3.up);
 
-        Quaternion targetRotaion = rotationX * rotationY;
+        // Combine rotations to get the final target rotation
+        Quaternion targetRotation = rotationX * rotationY;
 
-        // rotate
-        SwayRotation = Quaternion.Slerp(SwayRotation, targetRotaion, smooth * Time.deltaTime);
+        // Smoothly interpolate towards the target rotation
+        SwayRotation = Quaternion.Slerp(SwayRotation, targetRotation, smooth * Time.deltaTime);
     }
 }

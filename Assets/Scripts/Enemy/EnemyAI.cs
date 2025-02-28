@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.AI;
 using static UnityEngine.GraphicsBuffer;
 
+// This class controls the behavior of an enemy AI, including movement, attacking, and taking damage.
 public class EnemyAI : MonoBehaviour
 {
     public NavMeshAgent navAgent;
@@ -22,7 +23,7 @@ public class EnemyAI : MonoBehaviour
     private bool alreadyAttacked;
     private bool takeDamage;
 
-    public float range; //radius of sphere
+    public float range;
     public Transform centrePoint;
     public float walkSpeed;
     public float attackSpeed;
@@ -30,6 +31,7 @@ public class EnemyAI : MonoBehaviour
     [HideInInspector] public bool playerInAttackRange;
     [SerializeField] private LevelCompleteCheck levelComplete;
 
+    // Initializes references for NavMeshAgent, Animator, and Player.
     private void Awake()
     {
         animator = GetComponent<Animator>();
@@ -37,6 +39,7 @@ public class EnemyAI : MonoBehaviour
         navAgent = GetComponent<NavMeshAgent>();
     }
 
+    // Updates the AI's behavior based on player proximity and various conditions.
     private void Update()
     {
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, playerLayer);
@@ -44,12 +47,12 @@ public class EnemyAI : MonoBehaviour
 
         if (!playerInSightRange && !playerInAttackRange)
         {
-            if (navAgent.remainingDistance <= navAgent.stoppingDistance) //done with path
+            if (navAgent.remainingDistance <= navAgent.stoppingDistance) //Checks if enemy is done with path
             {
                 Vector3 point;
-                if (RandomPoint(centrePoint.position, range, out point)) //pass in our centre point and radius of area
+                if (RandomPoint(centrePoint.position, range, out point)) //Pass in our centre point and radius of area
                 {
-                    Debug.DrawRay(point, Vector3.up, Color.blue, 1.0f); //so you can see with gizmos
+                    Debug.DrawRay(point, Vector3.up, Color.blue, 1.0f); //So you can see with gizmos
                     navAgent.SetDestination(point);
                     navAgent.speed = walkSpeed;
                     animator.SetFloat("Speed", walkSpeed);
@@ -74,21 +77,21 @@ public class EnemyAI : MonoBehaviour
 
         else if (!playerInSightRange && !takeDamage)
         {
-            if (navAgent.remainingDistance <= navAgent.stoppingDistance) //done with path
+            if (navAgent.remainingDistance <= navAgent.stoppingDistance)
             {
                 Vector3 point;
-                if (RandomPoint(centrePoint.position, range, out point)) //pass in our centre point and radius of area
+                if (RandomPoint(centrePoint.position, range, out point))
                 {
-                    Debug.DrawRay(point, Vector3.up, Color.blue, 1.0f); //so you can see with gizmos
+                    Debug.DrawRay(point, Vector3.up, Color.blue, 1.0f);
                     navAgent.SetDestination(point);
                     navAgent.speed = walkSpeed;
                     animator.SetFloat("Speed", walkSpeed);
                 }
             }
         }
-
     }
 
+    // Generates a random point within a specified range.
     private bool RandomPoint(Vector3 center, float range, out Vector3 result)
     {
         for (int i = 0; i < 30; i++)
@@ -105,6 +108,7 @@ public class EnemyAI : MonoBehaviour
         return false;
     }
 
+    // Rotates the enemy to face the player.
     private void LookAtTarget()
     {
         Vector3 lookPos = player.position - transform.position;
@@ -113,6 +117,7 @@ public class EnemyAI : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 0.2f);
     }
 
+    // Commands the enemy to chase the player.
     private void ChasePlayer()
     {
         navAgent.SetDestination(player.position);
@@ -121,6 +126,7 @@ public class EnemyAI : MonoBehaviour
         navAgent.isStopped = false;
     }
 
+    // Attacks the player if in range.
     private void AttackPlayer()
     {
         navAgent.SetDestination(transform.position); // Stop moving
@@ -134,12 +140,14 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    // Resets the attack after a set delay.
     private void ResetAttack()
     {
         alreadyAttacked = false;
         animator.SetBool("Shooting", playerInAttackRange);
     }
 
+    // Deals damage to the enemy and plays a hit effect.
     public void TakeDamage(float damage)
     {
         if (health <= 0) return; // Prevent extra damage calls after death
@@ -157,6 +165,7 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    // Coroutine to handle the damage state for the enemy.
     private IEnumerator TakeDamageCoroutine()
     {
         takeDamage = true;
@@ -164,16 +173,16 @@ public class EnemyAI : MonoBehaviour
         takeDamage = false;
     }
 
+    // Handles the death of the enemy.
     private void Die()
     {
-        //if (!takeDamage) return; // Ensures it only runs once
-
         takeDamage = false;
         Destroy(gameObject, 0.5f);
         levelComplete.numEnemiesDestroyed++;
         Debug.Log("Enemies Killed: " + levelComplete.numEnemiesDestroyed);
     }
 
+    // Draws gizmos in the scene to visualize the attack and sight range.
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
